@@ -1,31 +1,39 @@
 class CommandDefiner {
-    static define (command) {
+    constructor(yargs) {
+        this.yargs = yargs;
+    }
+
+    define (command) {
         return {
             command: command.template,
             description: command.description,
-            builder: build(command),
-            handler: commandExecution(command)
+            builder: this.build(command),
+            handler: this.commandExecution(command)
         }
     }
-}
 
-const build = function (command) {
-    return (yargs) => {
-        for (const subCommand of command.subCommands) {
-            yargs.command(CommandDefiner.define(subCommand));
+    build (command) {
+        return (yargs) => {
+
+            for (const subCommand of command.subCommands) {
+                yargs.command(this.define(subCommand));
+            }
+
+            for (const option of command.options) {
+                yargs = yargs.options(option.name, option.definition);
+            }
+
+            return yargs;
         }
-
-        for (const option of command.options) {
-            yargs = yargs.options(option.name, option.definition);
-        }
-
-        return yargs;
     }
-}
 
-const commandExecution = function (command) {
-    return async (args) => {
-        await command.execute(args);
+    commandExecution (command) {
+        return async (args) => {
+            const commandResult = await command.execute(args);
+            if (!commandResult) {
+                this.yargs.showHelp();
+            }
+        }
     }
 }
 

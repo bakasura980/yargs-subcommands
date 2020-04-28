@@ -9,6 +9,8 @@ class HelloCommand extends Command {
     async execute (args) {
         const options = await super.processOptions(args);
         console.log(`Hello ${options.message || ''}`);
+
+        return true;
     }
 }
 

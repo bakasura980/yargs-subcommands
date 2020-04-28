@@ -7,12 +7,13 @@ const TestCommand = require('./test-command');
 (() => {
 
     let menu = require('yargs');
+    const commandDefiner = new CommandDefiner(menu);
 
     const testCommand = new TestCommand();
 
     menu.usage('Usage: $0 [command]');
 
-    menu.command(CommandDefiner.define(testCommand));
+    menu.command(commandDefiner.define(testCommand));
 
     menu.command({
         command: '*',
